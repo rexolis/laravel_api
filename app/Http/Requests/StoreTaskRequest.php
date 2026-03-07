@@ -11,7 +11,8 @@ class StoreTaskRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        // true if no authorization needed, otherwise implement your logic here
+        return true;
     }
 
     /**
@@ -22,7 +23,7 @@ class StoreTaskRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => ['required', 'string', 'max:255'],
         ];
     }
 }

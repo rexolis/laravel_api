@@ -1,10 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Task;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\TaskResource;
 
 class TaskController extends Controller
 {
@@ -13,15 +15,9 @@ class TaskController extends Controller
      */
     public function index()
     {
-        //
-    }
+        // return TaskResource::collection(Task::all);
+        return Task::all()->toResourceCollection();
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -29,7 +25,9 @@ class TaskController extends Controller
      */
     public function store(StoreTaskRequest $request)
     {
-        //
+        $task = Task::create($request->validated());
+        // return new TaskResource($task);
+        return $task->toResource();
     }
 
     /**
@@ -37,15 +35,10 @@ class TaskController extends Controller
      */
     public function show(Task $task)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Task $task)
-    {
-        //
+        // all three syntax are valid
+        // return new TaskResource($task);
+        // return TaskResource::make($task);
+        return $task->toResource();
     }
 
     /**
@@ -53,7 +46,8 @@ class TaskController extends Controller
      */
     public function update(UpdateTaskRequest $request, Task $task)
     {
-        //
+        $task->update($request->validated());
+        return $task->toResource();
     }
 
     /**
