@@ -90,4 +90,23 @@ class AuthTest extends TestCase
         $protected = $this->withHeader('Authorization', 'Bearer ' . $token)->getJson('/api/user');
         $protected->assertStatus(401);
     }
+
+    public function test_guest_cannot_access_user_endpoint(): void
+    {
+        $protected = $this->getJson('/api/user');
+        $protected->assertStatus(401);
+    }
+
+    public function test_authenticated_user_can_access_user_endpoint(): void
+    {
+        $user = User::factory()->create();  
+        $this->actingAs($user);
+
+        $response = $this->getJson('/api/user');
+        $response->assertStatus(200);
+        $response->assertJson([
+            'id'    => $user->id,
+            'email' => $user->email,
+        ]);
+    }
 }
