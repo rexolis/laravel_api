@@ -5,10 +5,10 @@ namespace App\Http\Controllers\Api\V2;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Task;
-use App\Models\User;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\TaskResource;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class TaskController extends Controller
 {
@@ -17,6 +17,8 @@ class TaskController extends Controller
      */
     public function index()
     {
+        Gate::authorize('viewAny', Task::class);
+
         // return TaskResource::collection(Task::all());
         return request()->user()->tasks()->get()->toResourceCollection();
 
@@ -27,7 +29,8 @@ class TaskController extends Controller
      */
     public function store(StoreTaskRequest $request)
     {
-        // $task = Task::create($request->validated() + ['user_id' => request()->user()->id]);
+        Gate::authorize('create', Task::class);
+        
         $task = request()->user()->tasks()->create($request->validated());
         // return new TaskResource($task);
         return $task->toResource();
@@ -36,8 +39,10 @@ class TaskController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Task $task)
+    public function show(Task $task, Request $request)
     {
+        Gate::authorize('view', $task);
+
         // all three syntax are valid
         // return new TaskResource($task);
         // return TaskResource::make($task);
@@ -49,6 +54,8 @@ class TaskController extends Controller
      */
     public function update(UpdateTaskRequest $request, Task $task)
     {
+        Gate::authorize('update', $task);
+
         $task->update($request->validated());
         return $task->toResource();
     }
@@ -56,8 +63,10 @@ class TaskController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Task $task)
+    public function destroy(Task $task, Request $request)
     {
+        Gate::authorize('delete', $task);
+        
         $task->delete();
         return response()->noContent();
     }
