@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use App\Models\Priority;
 
 class StoreTaskRequest extends FormRequest
 {
@@ -24,6 +26,7 @@ class StoreTaskRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
+            'priority_id' => ['nullable', Rule::exists(Priority::class, 'id')],
         ];
     }
 }
